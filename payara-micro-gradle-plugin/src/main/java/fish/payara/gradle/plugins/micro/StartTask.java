@@ -58,10 +58,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * gradle microStart --no-daemon -Dorg.gradle.debug=true
- *
- */
 public class StartTask extends AbstractTask {
 
     public static final String START_TASK_NAME = "microStart";

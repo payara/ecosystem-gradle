@@ -36,13 +36,13 @@ payaraMicro {
 
 ## Plugin Tasks
 
-### bundle
+### microBundle
 This task bundles the attached project's artifact into uber jar with specified configurations.
 
 - __javaPath__ (optional | default: "java"): Absolute path to the ```java``` executable.
 - __payaraVersion__ (optional |  default: 5.182): By default ```bundle``` mojo fetches payara-micro with version 5.182.
 
-## start
+## microStart
 This task start payara-micro with specified configurations.
 
 - __useUberJar__ (optional | default: false): Use created uber-jar that resides in ```build\libs``` folder. The name of the jar artifact will be resolved automatically by evaluating its final name, artifact id and version. This configuration has the higher precedence (in given order) compared to ```payaraMicroAbsolutePath```, ```payaraVersion``` and ```artifactItem```.   
@@ -56,7 +56,7 @@ This task start payara-micro with specified configurations.
 - __commandLineOptions__ (optional): Defines a list of command line options that will be passed onto payara-micro. Command line options can either be defined as key,value pairs or just as list of keys or values separately.
 
 
-## stop
+## microStop
 This task stops payara-micro with specified configurations. By default this goal tries to find out currently executing payara-micro instance based on project GAV. 
 
 - __processId__ (optional |): Process id of the running payara-micro.

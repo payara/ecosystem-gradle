@@ -258,7 +258,7 @@ public class StartTask extends AbstractTask {
             String path = getUberJarPath();
 
             if (!Files.exists(Paths.get(path))) {
-                throw new IllegalStateException("\"useUberJar\" option was set to \"true\" but detected path " + path + " does not exist. You need to execute the \"bundle\" goal before using this option.");
+                throw new IllegalStateException("\"useUberJar\" option was set to \"true\" but detected path " + path + " does not exist. You need to execute the \"bundle\" task before using this option.");
             }
 
             return path;

@@ -1,7 +1,7 @@
-# Payara Micro Maven Plugin
+# Payara Micro Gradle Plugin
 
 ## Summary
-Payara Micro Maven Plugin that incorporates payara-micro with the produced artifact. It requires JDK 1.8+.
+Payara Micro Gradle Plugin that incorporates payara-micro with the produced artifact. It requires JDK 1.8+.
  
 ### Latest version available: 1.0.0-SNAPSHOT
 
@@ -46,7 +46,7 @@ This task bundles the attached project's artifact into uber jar with specified c
 This task start payara-micro with specified configurations.
 
 - __useUberJar__ (optional | default: false): Use created uber-jar that resides in ```build\libs``` folder. The name of the jar artifact will be resolved automatically by evaluating its final name, artifact id and version. This configuration has the higher precedence (in given order) compared to ```payaraMicroAbsolutePath```, ```payaraVersion``` and ```artifactItem```.   
-- __daemon__ (optional | default: false): Starts payara-micro in separate JVM process and continues with the maven build.
+- __daemon__ (optional | default: false): Starts payara-micro in separate JVM process and continues with the gradle build.
 - __immediateExit__ (optional | default: false): If payara-micro is executed in ```daemon``` mode, the executor thread will wait for the ready message before shutting down its process. By setting ```immediateExit``` to ```true``` you can skip this and instantly interrupt the executor thread. 
 - __javaPath__ (optional | default: "java"): Absolute path to the ```java``` executable.
 - __payaraMicroAbsolutePath__ (optional): Absolute path to payara-micro executable.

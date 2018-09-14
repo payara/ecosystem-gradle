@@ -60,18 +60,18 @@ public class PayaraMicroPlugin implements Plugin<Project> {
         project.getPluginManager().apply(JavaPlugin.class);
         project.getPluginManager().apply(MavenPlugin.class);
         project.getPluginManager().apply(WarPlugin.class);
-        PayaraMicroExtension extension = createExtension();
         StartTask startTask = createMicroStartTask();
         StopTask stopTask = createMicroStopTask();
         BundleTask bundleTask = createMicroBundleTask();
         project.afterEvaluate(prj -> {
+            PayaraMicroExtension extension = createExtension();
             startTask.configure(extension);
             stopTask.configure(extension);
             bundleTask.configure(extension);
         });
     }
 
-    private PayaraMicroExtension createExtension() {
+    PayaraMicroExtension createExtension() {
         return project.getExtensions()
                 .create("payaraMicro", PayaraMicroExtension.class, project);
     }

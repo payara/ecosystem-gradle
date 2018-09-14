@@ -252,7 +252,7 @@ public class StartTask extends AbstractTask {
         return LOG;
     }
 
-    private String decideOnWhichMicroToUse() {
+    String decideOnWhichMicroToUse() {
         IllegalStateException exception = new IllegalStateException("Could not determine Payara Micro path. Please set it by defining either \"useUberJar\", \"payaraMicroAbsolutePath\" or \"artifactItem\" configuration options.");
         if (useUberJar) {
             String path = getUberJarPath();

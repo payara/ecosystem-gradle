@@ -38,16 +38,38 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-public interface Configuration {
-    String MICRO_GROUPID = "fish.payara.extras";
-    String MICRO_ARTIFACTID = "payara-micro";
-    String MICRO_THREAD_NAME = "PayaraMicroThread";
-    String MICRO_READY_MESSAGE = "ready in";
+import org.gradle.api.Project;
+import org.junit.jupiter.api.Test;
 
-    String DEFAULT_MICRO_VERSION = "5.182";
+public class StartStopLifecycleTest extends BaseTest {
 
-    String JAR_EXTENSION = "jar";
-    String WAR_EXTENSION = "war";
-    String MICROBUNDLE_EXTENSION = "microbundle";
+    @Test
+    public void warTest() throws Exception {
 
+        Project project = buildProject();
+        PayaraMicroExtension extension = buildExtension(project);
+
+        bootstrapMicro(project, extension);
+    }
+
+    @Test
+    public void customMicroVersionTest() throws Exception {
+
+        Project project = buildProject();
+        PayaraMicroExtension extension = buildExtension(project);
+        extension.setPayaraVersion("5.181");
+
+        bootstrapMicro(project, extension);
+    }
+
+    @Test
+    public void uberJarTest() throws Exception {
+
+        Project project = buildProject();
+        PayaraMicroExtension extension = buildExtension(project);
+        extension.setUseUberJar(true);
+
+        bundlMicro(project, extension);
+        bootstrapMicro(project, extension);
+    }
 }

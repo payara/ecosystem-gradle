@@ -106,15 +106,19 @@ public abstract class AbstractTask extends ConventionTask {
         return ((War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME)).getArchivePath();
     }
 
+    protected String getWarPath() {
+        return getWar().getAbsolutePath();
+    }
+
+    protected File getUberJar() {
+        return new File(getUberJarPath());
+    }
+
     protected String getUberJarPath() {
         return getWar().getAbsolutePath().replace(
                 "." + WAR_EXTENSION,
                 "-" + MICROBUNDLE_EXTENSION + "." + JAR_EXTENSION
         );
-    }
-
-    protected String getWarPath() {
-        return getWar().getAbsolutePath();
     }
 
     protected void copy(InputStream in, OutputStream out) throws IOException {

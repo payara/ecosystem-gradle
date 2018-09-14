@@ -69,7 +69,7 @@ public class StartStopLifecycleTest extends BaseTest {
         PayaraMicroExtension extension = buildExtension(project);
         extension.setUseUberJar(true);
 
-        bundlMicro(project, extension);
+        bundleMicro(project, extension);
         bootstrapMicro(project, extension);
     }
 }

@@ -45,8 +45,10 @@ public class BundleLifecycleTest extends BaseTest {
 
     @Test
     public void uberJarBundleTest() throws Exception {
+
         Project project = buildProject();
         PayaraMicroExtension extension = buildExtension(project);
-        bundlMicro(project, extension);
+
+        bundleMicro(project, extension);
     }
 }

@@ -39,6 +39,7 @@
 package fish.payara.gradle.plugins.micro;
 
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.bundling.War;
@@ -53,12 +54,16 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 public abstract class BaseTest {
 
+    private static final String MOCK_PROJECT_GROUP_ID = "fish.payara.gradle.plugins";
+    private static final String MOCK_PROJECT_NAME = "example";
+    private static final String MOCK_PROJECT_VERSION = "1.0.SNAPSHOT";
+
     protected Project buildProject() {
         Project project = ProjectBuilder.builder()
-                .withName("example")
+                .withName(MOCK_PROJECT_NAME)
                 .build();
-        project.setGroup("fish.payara.gradle.plugins");
-        project.setVersion("1.0.SNAPSHOT");
+        project.setGroup(MOCK_PROJECT_GROUP_ID);
+        project.setVersion(MOCK_PROJECT_VERSION);
 
         DefaultRepositoryHandler repositoryHandler = (DefaultRepositoryHandler) project.getRepositories();
         repositoryHandler.add(repositoryHandler.mavenLocal());
@@ -75,9 +80,10 @@ public abstract class BaseTest {
         return extension;
     }
 
-    protected void bundlMicro(Project project, PayaraMicroExtension extension) {
-        BundleTask bundleTask = (BundleTask) project.getTasks().getByName("microBundle");
-        assertTrue(bundleTask instanceof BundleTask);
+    protected void bundleMicro(Project project, PayaraMicroExtension extension) {
+        Task task = project.getTasks().getByName("microBundle");
+        assertTrue(task instanceof BundleTask);
+        BundleTask bundleTask = (BundleTask) task;
 
         bundleTask.configure(extension);
 
@@ -92,14 +98,16 @@ public abstract class BaseTest {
     }
 
     protected void bootstrapMicro(Project project, PayaraMicroExtension extension) {
-        StartTask startTask = (StartTask) project.getTasks().getByName("microStart");
-        assertTrue(startTask instanceof StartTask);
+        Task task = project.getTasks().getByName("microStart");
+        assertTrue(task instanceof StartTask);
+        StartTask startTask = (StartTask) task;
 
         startTask.configure(extension);
         assertNotNull(startTask.decideOnWhichMicroToUse());
 
-        StopTask stopTask = (StopTask) project.getTasks().getByName("microStop");
-        assertTrue(stopTask instanceof StopTask);
+        task = project.getTasks().getByName("microStop");
+        assertTrue(task instanceof StopTask);
+        StopTask stopTask = (StopTask) task;
 
         stopTask.configure(extension);
         assertNotNull(stopTask.getProjectGAV());

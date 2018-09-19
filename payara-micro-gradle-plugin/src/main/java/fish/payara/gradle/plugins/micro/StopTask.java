@@ -39,6 +39,7 @@
 package fish.payara.gradle.plugins.micro;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -75,38 +76,43 @@ public class StopTask extends AbstractTask {
             return;
         }
 
-        if (processId != null) {
-            killProcess(processId);
+        if (processId == null) {
+            processId = findProcessId();
         }
 
+        if (StringUtils.isNotEmpty(processId)) {
+            killProcess(processId);
+        } else {
+            getLog().warn("Could not find process of running payara-micro?");
+        }
+
+    }
+
+    String findProcessId() {
+        String processId = null;
         String executorName;
         if (useUberJar) {
             executorName = getUberJarPath();
+            executorName = executorName.substring(executorName.lastIndexOf(File.separator) + 1);
         } else {
             executorName = "-Dgav=" + getProjectGAV();
         }
-
-        final Runtime re = Runtime.getRuntime();
         try {
+            final Runtime re = Runtime.getRuntime();
             Process jpsProcess = re.exec("jps -v");
             InputStream inputStream = jpsProcess.getInputStream();
             BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
             String line;
-            String processId = null;
             while ((line = in.readLine()) != null) {
                 if (line.contains(executorName)) {
                     String[] split = line.split(" ");
                     processId = split[0];
                 }
             }
-            if (StringUtils.isNotEmpty(processId)) {
-                killProcess(processId);
-            } else {
-                getLog().warn("Could not find process of running payara-micro?");
-            }
         } catch (IOException e) {
             getLog().error(ERROR_MESSAGE, e);
         }
+        return processId;
     }
 
     private void killProcess(String processId) {
@@ -148,6 +154,7 @@ public class StopTask extends AbstractTask {
                 || osName.startsWith("Windows");
     }
 
+    @Override
     public Logger getLog() {
         return LOG;
     }
@@ -156,16 +163,8 @@ public class StopTask extends AbstractTask {
         return processId;
     }
 
-    void setProcessId(String processId) {
-        this.processId = processId;
-    }
-
     public Boolean getUseUberJar() {
         return useUberJar;
-    }
-
-    void setUseUberJar(Boolean useUberJar) {
-        this.useUberJar = useUberJar;
     }
 
 }

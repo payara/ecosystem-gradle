@@ -7,7 +7,7 @@ apply plugin: 'maven'
 apply plugin: "com.gradle.plugin-publish"
 
 group = 'fish.payara.gradle.plugins'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.0'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

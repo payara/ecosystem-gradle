@@ -3,27 +3,23 @@
 ## Summary
 Payara Micro Gradle Plugin that incorporates payara-micro with the produced artifact. It requires JDK 1.8+.
  
-### Latest version available: 1.0.0-SNAPSHOT
+### Latest version available: 1.0.0
 
 ## Installing
 
 To use it, simply add the following script to your build.gradle:
 
 ```groovy
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'fish.payara.gradle.plugins:payara-micro-gradle-plugin:1.0.0-SNAPSHOT'
-    }
+plugins {
+  id "fish.payara.micro-gradle-plugin" version "1.0.0"
 }
+```
 
-apply plugin: 'payara-micro-gradle-plugin'
+For more information, [click here](https://plugins.gradle.org/plugin/fish.payara.micro-gradle-plugin).
 
+## Configuration sample
+
+```groovy
 payaraMicro {
     payaraVersion = '5.182'
     deployWar = false

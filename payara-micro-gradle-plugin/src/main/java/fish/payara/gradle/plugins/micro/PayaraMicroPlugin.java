@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2018-2019] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,8 +63,8 @@ public class PayaraMicroPlugin implements Plugin<Project> {
         StartTask startTask = createMicroStartTask();
         StopTask stopTask = createMicroStopTask();
         BundleTask bundleTask = createMicroBundleTask();
+        PayaraMicroExtension extension = createExtension();
         project.afterEvaluate(prj -> {
-            PayaraMicroExtension extension = createExtension();
             startTask.configure(extension);
             stopTask.configure(extension);
             bundleTask.configure(extension);
@@ -72,8 +72,12 @@ public class PayaraMicroPlugin implements Plugin<Project> {
     }
 
     PayaraMicroExtension createExtension() {
-        return project.getExtensions()
-                .create("payaraMicro", PayaraMicroExtension.class, project);
+        PayaraMicroExtension ext = (PayaraMicroExtension) project.getExtensions().findByType(PayaraMicroExtension.class);
+        if (ext == null) {
+            ext = project.getExtensions()
+                    .create("payaraMicro", PayaraMicroExtension.class, project);
+        }
+        return ext;
     }
 
     private BundleTask createMicroBundleTask() {

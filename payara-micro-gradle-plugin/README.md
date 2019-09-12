@@ -25,7 +25,7 @@ payaraMicro {
     deployWar = false
     useUberJar = true
     daemon = false
-    commandLineOptions = [port: 2468]
+    commandLineOptions = [port: 2469]
     javaCommandLineOptions = [Dtest: 'test123', ea:true] 
 }
 ```

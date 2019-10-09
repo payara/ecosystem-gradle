@@ -21,7 +21,7 @@ For more information, [click here](https://plugins.gradle.org/plugin/fish.payara
 
 ```groovy
 payaraMicro {
-    payaraVersion = '5.192'
+    payaraVersion = '5.193'
     deployWar = false
     useUberJar = true
     daemon = false
@@ -36,7 +36,7 @@ payaraMicro {
 This task bundles the attached project's artifact into uber jar with specified configurations.
 
 - __javaPath__ (optional | default: "java"): Absolute path to the ```java``` executable.
-- __payaraVersion__ (optional |  default: 5.192): By default ```microBundle``` task fetches payara-micro with version 5.192.
+- __payaraVersion__ (optional |  default: 5.193): By default ```microBundle``` task fetches payara-micro with version 5.193.
 
 ## microStart
 This task start payara-micro with specified configurations.
@@ -46,7 +46,7 @@ This task start payara-micro with specified configurations.
 - __immediateExit__ (optional | default: false): If payara-micro is executed in ```daemon``` mode, the executor thread will wait for the ready message before shutting down its process. By setting ```immediateExit``` to ```true``` you can skip this and instantly interrupt the executor thread. 
 - __javaPath__ (optional | default: "java"): Absolute path to the ```java``` executable.
 - __payaraMicroAbsolutePath__ (optional): Absolute path to payara-micro executable.
-- __payaraVersion__ (optional): default: 5.192): The payara-micro version that will be used with ```microStart``` task.
+- __payaraVersion__ (optional): default: 5.193): The payara-micro version that will be used with ```microStart``` task.
 - __deployWar__ (optional | default: false): If the attached project is of type WAR, it will automatically be deployed to payara-micro if ```deployWar``` is set to ```true```. 
 - __javaCommandLineOptions__ (optional): Defines a list of command line options that will be passed to ```java``` executable. Command line options can either be defined as key-value pairs or just as list of values. key-value pairs will be formatted as ``key=value``.
 - __commandLineOptions__ (optional): Defines a list of command line options that will be passed onto payara-micro. Command line options can either be defined as key,value pairs or just as list of keys or values separately.

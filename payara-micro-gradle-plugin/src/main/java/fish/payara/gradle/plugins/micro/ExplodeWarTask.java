@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,48 +38,31 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-import org.gradle.api.Project;
-import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.nio.file.Path;
+import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.Sync;
 
-public class StartStopLifecycleTest extends BaseTest {
+public class ExplodeWarTask extends Sync {
 
-    @Test
-    public void warTest() throws Exception {
+    public static final String EXPLODE_TASK_NAME = "warExplode";
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
+    public static final String EXPLODE_TASK_DESCRIPTION = "Extact WAR file into the build folder.";
 
-        bootstrapMicro(project, extension);
+    private File explodedWarDirectory;
+
+    public void setWarFile(Path warFile) {
+        from(getProject().zipTree(warFile));
     }
 
-    @Test
-    public void customMicroVersionTest() throws Exception {
-
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setPayaraVersion("5.181");
-
-        bootstrapMicro(project, extension);
+    public void setExplodedWarDirectory(Path explodedWarDirectory) {
+        this.explodedWarDirectory = explodedWarDirectory.toFile();
+        into(explodedWarDirectory);
     }
 
-    @Test
-    public void uberJarTest() throws Exception {
-
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setUseUberJar(true);
-
-        bundleMicro(project, extension);
-        bootstrapMicro(project, extension);
+    @OutputDirectory
+    public File getExplodedWarDirectory() {
+        return explodedWarDirectory;
     }
 
-    @Test
-    public void explodedWarTest() throws Exception {
-
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setExploded(true);
-
-        bootstrapMicro(project, extension);
-    }
 }

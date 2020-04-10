@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,6 +38,7 @@
  */
 package fish.payara.gradle.plugins.micro;
 
+import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.Configuration.MICRO_READY_MESSAGE;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,21 +63,25 @@ public class StartTask extends AbstractTask {
 
     public static final String START_TASK_NAME = "microStart";
 
-    public static final String START_TASK_DESCRIPTION = "Assembles the JavaEE app into a war and deploys it to payara-micro.";
+    public static final String START_TASK_DESCRIPTION = "Starts Payara Micro with the specified configuration.";
 
-    private static final String ERROR_MESSAGE = "Errors occurred while executing payara-micro.";
+    private static final String ERROR_MESSAGE = "Errors occurred while starting payara-micro.";
 
     private static final Logger LOG = LoggerFactory.getLogger(StartTask.class);
 
-    private Boolean immediateExit;
+    private boolean immediateExit;
 
-    protected Boolean daemon;
+    protected boolean daemon;
 
     private String javaPath;
 
-    private Boolean useUberJar;
+    private boolean useUberJar;
 
-    private Boolean deployWar;
+    private boolean deployWar;
+    
+    private boolean exploded;
+
+    private String debug;
 
     private String payaraMicroAbsolutePath;
 
@@ -90,12 +95,14 @@ public class StartTask extends AbstractTask {
 
     @Override
     public void configure(PayaraMicroExtension extension) {
-        this.skip = extension.getSkip();
-        this.immediateExit = extension.getImmediateExit();
-        this.daemon = extension.getDaemon();
+        this.skip = extension.isSkip();
+        this.immediateExit = extension.isImmediateExit();
+        this.daemon = extension.isDaemon();
         this.javaPath = extension.getJavaPath();
-        this.useUberJar = extension.getUseUberJar();
-        this.deployWar = extension.getDeployWar();
+        this.useUberJar = extension.isUseUberJar();
+        this.deployWar = extension.isDeployWar();
+        this.exploded = extension.isExploded();
+        this.debug = extension.getDebug();
         this.payaraMicroAbsolutePath = extension.getPayaraMicroAbsolutePath();
         this.payaraVersion = extension.getPayaraVersion();
         this.javaCommandLineOptions = extension.getJavaCommandLineOptions();
@@ -116,6 +123,15 @@ public class StartTask extends AbstractTask {
             getLog().info("Starting payara-micro from path: " + path);
             int indice = 0;
             actualArgs.add(indice++, javaPath);
+
+            if (debug != null && !"false".equalsIgnoreCase(debug)) {
+                if (Boolean.parseBoolean(debug)) {
+                    actualArgs.add(indice++, "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005");
+                } else {
+                    actualArgs.add(indice++, debug);
+                }
+            }
+
             if (javaCommandLineOptions != null) {
                 for (Entry<String, Object> entry : javaCommandLineOptions.entrySet()) {
                     String key = entry.getKey();
@@ -132,6 +148,7 @@ public class StartTask extends AbstractTask {
                         actualArgs.add(indice++, "-" + key);
                     }
                 }
+                actualArgs.add(indice++, "-Dorg.gradle.debug=true");
 
             }
             actualArgs.add(indice++, "-Dgav=" + getProjectGAV());
@@ -139,7 +156,11 @@ public class StartTask extends AbstractTask {
             actualArgs.add(indice++, path);
             if (deployWar) {
                 actualArgs.add(indice++, "--deploy");
-                actualArgs.add(indice++, getWarPath());
+                if (exploded) {
+                    actualArgs.add(indice++, getExplodedWarPath());
+                } else {
+                    actualArgs.add(indice++, getWarPath());
+                }
             }
             if (commandLineOptions != null) {
                 for (Entry<String, Object> entry : commandLineOptions.entrySet()) {
@@ -258,7 +279,7 @@ public class StartTask extends AbstractTask {
             String path = getUberJarPath();
 
             if (!Files.exists(Paths.get(path))) {
-                throw new IllegalStateException("\"useUberJar\" option was set to \"true\" but detected path " + path + " does not exist. You need to execute the \"bundle\" task before using this option.");
+                throw new IllegalStateException("\"useUberJar\" option was set to \"true\" but detected path " + path + " does not exist. You need to execute the \"" + BUNDLE_TASK_NAME + "\" task before using this option.");
             }
 
             return path;
@@ -275,11 +296,11 @@ public class StartTask extends AbstractTask {
         throw exception;
     }
 
-    public Boolean getImmediateExit() {
+    public boolean isImmediateExit() {
         return immediateExit;
     }
 
-    public Boolean getDaemon() {
+    public boolean isDaemon() {
         return daemon;
     }
 
@@ -287,11 +308,11 @@ public class StartTask extends AbstractTask {
         return javaPath;
     }
 
-    public Boolean getUseUberJar() {
+    public boolean isUseUberJar() {
         return useUberJar;
     }
 
-    public Boolean getDeployWar() {
+    public boolean isDeployWar() {
         return deployWar;
     }
 

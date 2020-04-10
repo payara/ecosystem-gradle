@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
+import org.apache.commons.io.FilenameUtils;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
@@ -59,7 +60,7 @@ import org.slf4j.Logger;
 
 public abstract class AbstractTask extends ConventionTask {
 
-    protected Boolean skip;
+    protected boolean skip;
 
     protected Project project;
 
@@ -81,12 +82,8 @@ public abstract class AbstractTask extends ConventionTask {
         return (String) project.getGroup() + ":" + project.getName() + ":" + (String) project.getVersion();
     }
 
-    public Boolean getSkip() {
+    public boolean isSkip() {
         return skip;
-    }
-
-    public void setSkip(Boolean skip) {
-        this.skip = skip;
     }
 
     protected Optional<String> getPayaraMicroPath(String version) {
@@ -102,12 +99,18 @@ public abstract class AbstractTask extends ConventionTask {
                 .map(File::getAbsolutePath);
     }
 
-    protected File getWar() {
-        return ((War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME)).getArchivePath();
+    protected War getWar() {
+        return (War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME);
     }
 
     protected String getWarPath() {
-        return getWar().getAbsolutePath();
+        return getWar().getArchivePath().getAbsolutePath();
+    }
+
+    protected String getExplodedWarPath() {
+        return getWar().getArchivePath().getParent() 
+                + File.separator 
+                + FilenameUtils.getBaseName(getWar().getArchiveName());
     }
 
     protected File getUberJar() {
@@ -115,10 +118,10 @@ public abstract class AbstractTask extends ConventionTask {
     }
 
     protected String getUberJarPath() {
-        return getWar().getAbsolutePath().replace(
-                "." + WAR_EXTENSION,
-                "-" + MICROBUNDLE_EXTENSION + "." + JAR_EXTENSION
-        );
+        return getWar()
+                .getArchivePath()
+                .getAbsolutePath()
+                .replace("." + WAR_EXTENSION, "-" + MICROBUNDLE_EXTENSION + "." + JAR_EXTENSION);
     }
 
     protected void copy(InputStream in, OutputStream out) throws IOException {

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,22 +39,36 @@
 package fish.payara.gradle.plugins.micro;
 
 import static fish.payara.gradle.plugins.micro.Configuration.DEFAULT_MICRO_VERSION;
+import static fish.payara.gradle.plugins.micro.PayaraMicroPlugin.PLUGIN_ID;
 import java.util.Map;
 import org.gradle.api.Project;
 
 public class PayaraMicroExtension {
 
-    private Boolean skip = false;
+    private boolean skip;
 
-    private Boolean immediateExit = true;
+    private boolean immediateExit = true;
 
-    private Boolean daemon = false;
+    private boolean daemon;
 
     private String javaPath = "java";
 
-    private Boolean useUberJar = false;
+    private boolean useUberJar;
 
-    private Boolean deployWar = false;
+    private boolean deployWar;
+
+    /**
+     * Use exploded artifact for deployment.
+     */
+    private boolean exploded;
+
+    /**
+     * Attach a debugger. If set to "true", the process will suspend and wait
+     * for a debugger to attach on port 5005. If set to other value, will be
+     * appended to the argLine, allowing you to configure custom debug options.
+     *
+     */
+    private String debug;
 
     private String payaraMicroAbsolutePath;
 
@@ -78,56 +92,76 @@ public class PayaraMicroExtension {
         this.project = project;
     }
 
-    public Boolean getSkip() {
-        return skip;
+    public Project getProject() {
+        return project;
     }
 
-    public void setSkip(Boolean skip) {
+    public boolean isSkip() {
+        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".skip", String.valueOf(skip)));
+    }
+
+    public void setSkip(boolean skip) {
         this.skip = skip;
     }
 
-    public Boolean getImmediateExit() {
-        return immediateExit;
+    public boolean isImmediateExit() {
+        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".immediateExit", String.valueOf(immediateExit)));
     }
 
-    public void setImmediateExit(Boolean immediateExit) {
+    public void setImmediateExit(boolean immediateExit) {
         this.immediateExit = immediateExit;
     }
 
-    public Boolean getDaemon() {
-        return daemon;
+    public boolean isDaemon() {
+        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".daemon", String.valueOf(daemon)));
     }
 
-    public void setDaemon(Boolean daemon) {
+    public void setDaemon(boolean daemon) {
         this.daemon = daemon;
     }
 
     public String getJavaPath() {
-        return javaPath;
+        return System.getProperty(PLUGIN_ID + ".javaPath", javaPath);
     }
 
     public void setJavaPath(String javaPath) {
         this.javaPath = javaPath;
     }
 
-    public Boolean getUseUberJar() {
-        return useUberJar;
+    public boolean isUseUberJar() {
+        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".useUberJar", String.valueOf(useUberJar)));
     }
 
-    public void setUseUberJar(Boolean useUberJar) {
+    public void setUseUberJar(boolean useUberJar) {
         this.useUberJar = useUberJar;
     }
 
-    public Boolean getDeployWar() {
-        return deployWar;
+    public boolean isDeployWar() {
+        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".deployWar", String.valueOf(deployWar)));
     }
 
-    public void setDeployWar(Boolean deployWar) {
+    public void setDeployWar(boolean deployWar) {
         this.deployWar = deployWar;
     }
 
+    public boolean isExploded() {
+        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".exploded", String.valueOf(exploded)));
+    }
+
+    public void setExploded(boolean exploded) {
+        this.exploded = exploded;
+    }
+
+    public String getDebug() {
+        return System.getProperty(PLUGIN_ID + ".debug", debug);
+    }
+
+    public void setDebug(String debug) {
+        this.debug = debug;
+    }
+
     public String getPayaraMicroAbsolutePath() {
-        return payaraMicroAbsolutePath;
+        return System.getProperty(PLUGIN_ID + ".payaraMicroAbsolutePath", payaraMicroAbsolutePath);
     }
 
     public void setPayaraMicroAbsolutePath(String payaraMicroAbsolutePath) {
@@ -135,7 +169,7 @@ public class PayaraMicroExtension {
     }
 
     public String getPayaraVersion() {
-        return payaraVersion;
+        return System.getProperty(PLUGIN_ID + ".payaraVersion", payaraVersion);
     }
 
     public void setPayaraVersion(String payaraVersion) {
@@ -159,7 +193,7 @@ public class PayaraMicroExtension {
     }
 
     public String getProcessId() {
-        return processId;
+        return System.getProperty(PLUGIN_ID + ".processId", processId);
     }
 
     public void setProcessId(String processId) {

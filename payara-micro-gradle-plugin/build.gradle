@@ -1,9 +1,9 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
+    id 'maven-publish'
 }
 
 apply plugin: 'java'
-apply plugin: 'maven' 
 apply plugin: "com.gradle.plugin-publish"
 
 group = 'fish.payara.gradle.plugins'
@@ -21,6 +21,7 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
     compile 'org.apache.commons:commons-lang3:3.9'
+    compile 'commons-io:commons-io:2.6'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
     testImplementation 'org.awaitility:awaitility:4.0.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
@@ -51,6 +52,18 @@ pluginBundle {
             id = 'fish.payara.micro-gradle-plugin'
             displayName = 'Payara Micro Gradle Plugin'
             description = 'Payara Micro gradle plugin incorporates payara-micro with the produced artifact.'
+        }
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = "fish.payara.gradle.plugins"
+            artifactId = "payara-micro-gradle-plugin"
+            version = "1.0.4-SNAPSHOT"
+
+            from components.java
         }
     }
 }

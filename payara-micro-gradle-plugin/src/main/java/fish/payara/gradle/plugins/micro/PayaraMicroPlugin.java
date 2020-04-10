@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) [2018-2019] Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2018-2020] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,17 +40,24 @@ package fish.payara.gradle.plugins.micro;
 
 import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_DESCRIPTION;
 import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_NAME;
+import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_DESCRIPTION;
+import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_DESCRIPTION;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_DESCRIPTION;
 import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_NAME;
+import org.apache.commons.io.FilenameUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.MavenPlugin;
 import org.gradle.api.plugins.WarPlugin;
+import org.gradle.api.tasks.bundling.War;
 
 public class PayaraMicroPlugin implements Plugin<Project> {
+
+    public static final String PLUGIN_ID = "payaraMicro";
 
     private Project project;
 
@@ -68,14 +75,15 @@ public class PayaraMicroPlugin implements Plugin<Project> {
             startTask.configure(extension);
             stopTask.configure(extension);
             bundleTask.configure(extension);
+            createExplodeWarTask();
         });
     }
 
     PayaraMicroExtension createExtension() {
-        PayaraMicroExtension ext = (PayaraMicroExtension) project.getExtensions().findByType(PayaraMicroExtension.class);
+        PayaraMicroExtension ext = project.getExtensions().findByType(PayaraMicroExtension.class);
         if (ext == null) {
             ext = project.getExtensions()
-                    .create("payaraMicro", PayaraMicroExtension.class, project);
+                    .create(PLUGIN_ID, PayaraMicroExtension.class, project);
         }
         return ext;
     }
@@ -87,20 +95,36 @@ public class PayaraMicroPlugin implements Plugin<Project> {
     }
 
     private StartTask createMicroStartTask() {
-        StartTask task = createTask(START_TASK_NAME, START_TASK_DESCRIPTION, StartTask.class);
-        task.dependsOn(WarPlugin.WAR_TASK_NAME);
-        return task;
+        return createTask(START_TASK_NAME, START_TASK_DESCRIPTION, StartTask.class);
     }
 
     private StopTask createMicroStopTask() {
         return createTask(STOP_TASK_NAME, STOP_TASK_DESCRIPTION, StopTask.class);
     }
 
-    private <T extends AbstractTask> T createTask(String name, String description, Class<T> action) {
+    private ExplodeWarTask createExplodeWarTask() {
+        ExplodeWarTask task = null;
+        War war = (War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME);
+        if (war != null) {
+            task = createTask(EXPLODE_TASK_NAME, EXPLODE_TASK_DESCRIPTION, ExplodeWarTask.class);
+            task.dependsOn(war);
+            task.setWarFile(war.getArchivePath().toPath());
+            task.setExplodedWarDirectory(
+                    war.getArchivePath().getParentFile().toPath().resolve(
+                            FilenameUtils.getBaseName(war.getArchiveName())
+                    )
+            );
+        }
+        return task;
+    }
+
+    private <T extends Task> T createTask(String name, String description, Class<T> action) {
         T task = project.getTasks().create(name, action);
         task.setGroup(WarPlugin.WEB_APP_GROUP);
         task.setDescription(description);
-        task.setProject(project);
+        if (task instanceof AbstractTask) {
+            ((AbstractTask) task).setProject(project);
+        }
         return task;
     }
 

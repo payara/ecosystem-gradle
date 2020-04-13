@@ -54,7 +54,7 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.MavenPlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.bundling.War;
-
+  
 public class PayaraMicroPlugin implements Plugin<Project> {
 
     public static final String PLUGIN_ID = "payaraMicro";
@@ -70,11 +70,13 @@ public class PayaraMicroPlugin implements Plugin<Project> {
         StartTask startTask = createMicroStartTask();
         StopTask stopTask = createMicroStopTask();
         BundleTask bundleTask = createMicroBundleTask();
+        ReloadTask reloadTask = createMicroReloadTask();
         PayaraMicroExtension extension = createExtension();
         project.afterEvaluate(prj -> {
             startTask.configure(extension);
             stopTask.configure(extension);
             bundleTask.configure(extension);
+            reloadTask.configure(extension);
             createExplodeWarTask();
         });
     }
@@ -100,6 +102,10 @@ public class PayaraMicroPlugin implements Plugin<Project> {
 
     private StopTask createMicroStopTask() {
         return createTask(STOP_TASK_NAME, STOP_TASK_DESCRIPTION, StopTask.class);
+    }
+
+    private ReloadTask createMicroReloadTask() {
+        return createTask(ReloadTask.RELOAD_TASK_NAME, ReloadTask.RELOAD_TASK_DESCRIPTION, ReloadTask.class);
     }
 
     private ExplodeWarTask createExplodeWarTask() {

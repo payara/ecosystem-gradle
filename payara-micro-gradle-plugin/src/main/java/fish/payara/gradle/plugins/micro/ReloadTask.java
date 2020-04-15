@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,48 +38,55 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-import org.gradle.api.Project;
-import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.io.IOException;
+import org.gradle.api.tasks.TaskAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class StartStopLifecycleTest extends BaseTest {
+public class ReloadTask extends AbstractTask {
 
-    @Test
-    public void warTest() throws Exception {
+    public static final String RELOAD_TASK_NAME = "microReload";
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
+    public static final String RELOAD_TASK_DESCRIPTION = "Redeploys the exploded WAR file.";
 
-        bootstrapMicro(project, extension);
+    private static final Logger LOG = LoggerFactory.getLogger(ReloadTask.class);
+
+    private static final String RELOAD_FILE = ".reload";
+
+    @Override
+    public void configure(PayaraMicroExtension extension) {
+        this.skip = extension.isSkip();
     }
 
-    @Test
-    public void customMicroVersionTest() throws Exception {
+    @TaskAction
+    public void onStop() {
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setPayaraVersion("5.181");
+        if (skip) {
+            getLog().info("Reload task execution is skipped");
+            return;
+        }
 
-        bootstrapMicro(project, extension);
+        File explodedDir = new File(getExplodedWarPath());
+        if (!explodedDir.exists()) {
+            throw new IllegalStateException(String.format("explodedDir[%s] not found", explodedDir.toString()));
+        }
+        File reloadFile = new File(explodedDir, RELOAD_FILE);
+        if (reloadFile.exists()) {
+            reloadFile.setLastModified(System.currentTimeMillis());
+        } else {
+            try {
+                reloadFile.createNewFile();
+            } catch (IOException ex) {
+                throw new IllegalStateException("Unable to create .reload file " + ex.toString());
+            }
+        }
+
     }
 
-    @Test
-    public void uberJarTest() throws Exception {
-
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setUseUberJar(true);
-
-        bundleMicro(project, extension);
-        bootstrapMicro(project, extension);
+    @Override
+    public Logger getLog() {
+        return LOG;
     }
 
-    @Test
-    public void explodedWarTest() throws Exception {
-
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setExploded(true);
-
-        bootstrapMicro(project, extension);
-    }
 }

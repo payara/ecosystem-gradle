@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,18 +54,18 @@ public class StopTask extends AbstractTask {
 
     public static final String STOP_TASK_NAME = "microStop";
 
-    public static final String STOP_TASK_DESCRIPTION = "Assembles the JavaEE app into a war and deploys it to payara-micro.";
+    public static final String STOP_TASK_DESCRIPTION = "Stops Payara Micro with the specified configuration.";
 
     private static final Logger LOG = LoggerFactory.getLogger(StopTask.class);
 
     private String processId;
 
-    private Boolean useUberJar;
+    private boolean useUberJar;
 
     @Override
     public void configure(PayaraMicroExtension extension) {
-        this.skip = extension.getSkip();
-        this.useUberJar = extension.getUseUberJar();
+        this.skip = extension.isSkip();
+        this.useUberJar = extension.isUseUberJar();
         this.processId = extension.getProcessId();
     }
 
@@ -163,7 +163,7 @@ public class StopTask extends AbstractTask {
         return processId;
     }
 
-    public Boolean getUseUberJar() {
+    public boolean isUseUberJar() {
         return useUberJar;
     }
 

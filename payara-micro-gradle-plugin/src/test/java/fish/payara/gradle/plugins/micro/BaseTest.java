@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) [2018-2019] Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2018-2020] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,13 +38,14 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-import java.util.concurrent.TimeUnit;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_NAME;
+import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_NAME;
+import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_NAME;
 import org.awaitility.Awaitility;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler;
-import org.gradle.api.plugins.WarPlugin;
+import static org.gradle.api.plugins.WarPlugin.WAR_TASK_NAME;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.testfixtures.ProjectBuilder;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -84,31 +85,31 @@ public abstract class BaseTest {
     }
 
     protected void bundleMicro(Project project, PayaraMicroExtension extension) {
-        Task task = project.getTasks().getByName("microBundle");
+        Task task = project.getTasks().getByName(BUNDLE_TASK_NAME);
         assertTrue(task instanceof BundleTask);
         BundleTask bundleTask = (BundleTask) task;
 
         bundleTask.configure(extension);
 
-        War war = ((War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME));
+        War war = ((War) project.getTasks().getByName(WAR_TASK_NAME));
         war.execute();
         assertTrue(war.getArchivePath().exists());
 
         bundleTask.execute();
         assertNotNull(bundleTask.getPayaraMicroPath(extension.getPayaraVersion()));
-        assertTrue(bundleTask.getWar().exists());
+        assertTrue(bundleTask.getWar().getArchivePath().exists());
         assertTrue(bundleTask.getUberJar().exists());
     }
 
     protected void bootstrapMicro(Project project, PayaraMicroExtension extension) {
-        Task task = project.getTasks().getByName("microStart");
+        Task task = project.getTasks().getByName(START_TASK_NAME);
         assertTrue(task instanceof StartTask);
         StartTask startTask = (StartTask) task;
 
         startTask.configure(extension);
         assertNotNull(startTask.decideOnWhichMicroToUse());
 
-        task = project.getTasks().getByName("microStop");
+        task = project.getTasks().getByName(STOP_TASK_NAME);
         assertTrue(task instanceof StopTask);
         StopTask stopTask = (StopTask) task;
 

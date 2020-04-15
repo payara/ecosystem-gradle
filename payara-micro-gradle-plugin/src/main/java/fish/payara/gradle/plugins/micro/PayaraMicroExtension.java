@@ -97,7 +97,7 @@ public class PayaraMicroExtension {
     }
 
     public boolean isSkip() {
-        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".skip", String.valueOf(skip)));
+        return Boolean.valueOf(getValue("skip", skip));
     }
 
     public void setSkip(boolean skip) {
@@ -105,7 +105,7 @@ public class PayaraMicroExtension {
     }
 
     public boolean isImmediateExit() {
-        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".immediateExit", String.valueOf(immediateExit)));
+        return Boolean.valueOf(getValue("immediateExit", immediateExit));
     }
 
     public void setImmediateExit(boolean immediateExit) {
@@ -113,7 +113,7 @@ public class PayaraMicroExtension {
     }
 
     public boolean isDaemon() {
-        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".daemon", String.valueOf(daemon)));
+        return Boolean.valueOf(getValue("daemon", daemon));
     }
 
     public void setDaemon(boolean daemon) {
@@ -121,7 +121,7 @@ public class PayaraMicroExtension {
     }
 
     public String getJavaPath() {
-        return System.getProperty(PLUGIN_ID + ".javaPath", javaPath);
+        return getValue("javaPath", javaPath);
     }
 
     public void setJavaPath(String javaPath) {
@@ -129,7 +129,7 @@ public class PayaraMicroExtension {
     }
 
     public boolean isUseUberJar() {
-        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".useUberJar", String.valueOf(useUberJar)));
+        return Boolean.valueOf(getValue("useUberJar", useUberJar));
     }
 
     public void setUseUberJar(boolean useUberJar) {
@@ -137,7 +137,7 @@ public class PayaraMicroExtension {
     }
 
     public boolean isDeployWar() {
-        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".deployWar", String.valueOf(deployWar)));
+        return Boolean.valueOf(getValue("deployWar", deployWar));
     }
 
     public void setDeployWar(boolean deployWar) {
@@ -145,7 +145,7 @@ public class PayaraMicroExtension {
     }
 
     public boolean isExploded() {
-        return Boolean.valueOf(System.getProperty(PLUGIN_ID + ".exploded", String.valueOf(exploded)));
+        return Boolean.valueOf(getValue("exploded", exploded));
     }
 
     public void setExploded(boolean exploded) {
@@ -153,7 +153,7 @@ public class PayaraMicroExtension {
     }
 
     public String getDebug() {
-        return System.getProperty(PLUGIN_ID + ".debug", debug);
+        return getValue("debug", debug);
     }
 
     public void setDebug(String debug) {
@@ -161,7 +161,7 @@ public class PayaraMicroExtension {
     }
 
     public String getPayaraMicroAbsolutePath() {
-        return System.getProperty(PLUGIN_ID + ".payaraMicroAbsolutePath", payaraMicroAbsolutePath);
+        return getValue("payaraMicroAbsolutePath", payaraMicroAbsolutePath);
     }
 
     public void setPayaraMicroAbsolutePath(String payaraMicroAbsolutePath) {
@@ -169,7 +169,7 @@ public class PayaraMicroExtension {
     }
 
     public String getPayaraVersion() {
-        return System.getProperty(PLUGIN_ID + ".payaraVersion", payaraVersion);
+        return getValue("payaraVersion", payaraVersion);
     }
 
     public void setPayaraVersion(String payaraVersion) {
@@ -193,11 +193,15 @@ public class PayaraMicroExtension {
     }
 
     public String getProcessId() {
-        return System.getProperty(PLUGIN_ID + ".processId", processId);
+        return getValue("processId", processId);
     }
 
     public void setProcessId(String processId) {
         this.processId = processId;
+    }
+
+    private <T> String getValue(String key, T defaultValue) {
+        return System.getProperty(PLUGIN_ID + "." + key, String.valueOf(defaultValue));
     }
 
 }

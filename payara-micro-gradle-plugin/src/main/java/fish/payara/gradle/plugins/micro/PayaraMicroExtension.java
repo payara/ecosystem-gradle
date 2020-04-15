@@ -201,7 +201,11 @@ public class PayaraMicroExtension {
     }
 
     private <T> String getValue(String key, T defaultValue) {
-        return System.getProperty(PLUGIN_ID + "." + key, String.valueOf(defaultValue));
+        if (defaultValue != null) {
+            return System.getProperty(PLUGIN_ID + "." + key, String.valueOf(defaultValue));
+        } else {
+            return System.getProperty(PLUGIN_ID + "." + key);
+        }
     }
 
 }

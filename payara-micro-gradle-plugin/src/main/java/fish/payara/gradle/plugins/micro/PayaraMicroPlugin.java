@@ -51,7 +51,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.MavenPlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.bundling.War;
   
@@ -65,19 +64,19 @@ public class PayaraMicroPlugin implements Plugin<Project> {
     public void apply(Project project) {
         this.project = project;
         project.getPluginManager().apply(JavaPlugin.class);
-        project.getPluginManager().apply(MavenPlugin.class);
         project.getPluginManager().apply(WarPlugin.class);
         StartTask startTask = createMicroStartTask();
         StopTask stopTask = createMicroStopTask();
         BundleTask bundleTask = createMicroBundleTask();
         ReloadTask reloadTask = createMicroReloadTask();
+        ExplodeWarTask explodeWarTask = createMicroExplodeWarTask();
         PayaraMicroExtension extension = createExtension();
         project.afterEvaluate(prj -> {
             startTask.configure(extension);
             stopTask.configure(extension);
             bundleTask.configure(extension);
             reloadTask.configure(extension);
-            createExplodeWarTask();
+            configureExplodeWarTask();
         });
     }
 
@@ -107,17 +106,22 @@ public class PayaraMicroPlugin implements Plugin<Project> {
     private ReloadTask createMicroReloadTask() {
         return createTask(ReloadTask.RELOAD_TASK_NAME, ReloadTask.RELOAD_TASK_DESCRIPTION, ReloadTask.class);
     }
+    
+    
+    private ExplodeWarTask createMicroExplodeWarTask() {
+        return createTask(ExplodeWarTask.EXPLODE_TASK_NAME, ExplodeWarTask.EXPLODE_TASK_DESCRIPTION, ExplodeWarTask.class);
+    }
 
-    private ExplodeWarTask createExplodeWarTask() {
+    ExplodeWarTask configureExplodeWarTask() {
         ExplodeWarTask task = null;
         War war = (War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME);
-        if (war != null) {
-            task = createTask(EXPLODE_TASK_NAME, EXPLODE_TASK_DESCRIPTION, ExplodeWarTask.class);
+        if (war != null && war.getArchiveFile().isPresent()) {
+            task = (ExplodeWarTask) project.getTasks().getByName(ExplodeWarTask.EXPLODE_TASK_NAME);
             task.dependsOn(war);
-            task.setWarFile(war.getArchivePath().toPath());
+            task.setWarFile(war.getArchiveFile().get().getAsFile().toPath());
             task.setExplodedWarDirectory(
-                    war.getArchivePath().getParentFile().toPath().resolve(
-                            FilenameUtils.getBaseName(war.getArchiveName())
+                    war.getArchiveFile().get().getAsFile().getParentFile().toPath().resolve(
+                            FilenameUtils.getBaseName(war.getArchiveFileName().get())
                     )
             );
         }

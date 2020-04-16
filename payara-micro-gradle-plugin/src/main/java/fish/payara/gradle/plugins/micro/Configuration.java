@@ -44,7 +44,7 @@ public interface Configuration {
     String MICRO_THREAD_NAME = "PayaraMicroThread";
     String MICRO_READY_MESSAGE = "ready in";
 
-    String DEFAULT_MICRO_VERSION = "5.193";
+    String DEFAULT_MICRO_VERSION = "5.201";
 
     String JAR_EXTENSION = "jar";
     String WAR_EXTENSION = "war";

@@ -172,7 +172,7 @@ public class StartTask extends AbstractTask {
                     }
                 }
             }
-            System.out.println("args " + actualArgs);
+            getLog().info("Execution arguments " + actualArgs);
             try {
                 final Runtime re = Runtime.getRuntime();
                 microProcess = re.exec(actualArgs.toArray(new String[actualArgs.size()]));
@@ -294,42 +294,6 @@ public class StartTask extends AbstractTask {
         }
 
         throw exception;
-    }
-
-    public boolean isImmediateExit() {
-        return immediateExit;
-    }
-
-    public boolean isDaemon() {
-        return daemon;
-    }
-
-    public String getJavaPath() {
-        return javaPath;
-    }
-
-    public boolean isUseUberJar() {
-        return useUberJar;
-    }
-
-    public boolean isDeployWar() {
-        return deployWar;
-    }
-
-    public String getPayaraMicroAbsolutePath() {
-        return payaraMicroAbsolutePath;
-    }
-
-    public String getPayaraVersion() {
-        return payaraVersion;
-    }
-
-    public Map<String, Object> getJavaCommandLineOptions() {
-        return javaCommandLineOptions;
-    }
-
-    public Map<String, Object> getCommandLineOptions() {
-        return commandLineOptions;
     }
 
 }

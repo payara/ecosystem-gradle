@@ -42,6 +42,8 @@ import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_DESCRIPTIO
 import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_DESCRIPTION;
 import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_NAME;
+import static fish.payara.gradle.plugins.micro.ReloadTask.RELOAD_TASK_DESCRIPTION;
+import static fish.payara.gradle.plugins.micro.ReloadTask.RELOAD_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_DESCRIPTION;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_DESCRIPTION;
@@ -57,6 +59,8 @@ import org.gradle.api.tasks.bundling.War;
 public class PayaraMicroPlugin implements Plugin<Project> {
 
     public static final String PLUGIN_ID = "payaraMicro";
+
+    public static final String PAYARA_MICRO_GROUP = "Payara Micro";
 
     private Project project;
 
@@ -104,19 +108,18 @@ public class PayaraMicroPlugin implements Plugin<Project> {
     }
 
     private ReloadTask createMicroReloadTask() {
-        return createTask(ReloadTask.RELOAD_TASK_NAME, ReloadTask.RELOAD_TASK_DESCRIPTION, ReloadTask.class);
+        return createTask(RELOAD_TASK_NAME, RELOAD_TASK_DESCRIPTION, ReloadTask.class);
     }
-    
-    
+
     private ExplodeWarTask createMicroExplodeWarTask() {
-        return createTask(ExplodeWarTask.EXPLODE_TASK_NAME, ExplodeWarTask.EXPLODE_TASK_DESCRIPTION, ExplodeWarTask.class);
+        return createTask(EXPLODE_TASK_NAME, EXPLODE_TASK_DESCRIPTION, ExplodeWarTask.class);
     }
 
     ExplodeWarTask configureExplodeWarTask() {
         ExplodeWarTask task = null;
         War war = (War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME);
         if (war != null && war.getArchiveFile().isPresent()) {
-            task = (ExplodeWarTask) project.getTasks().getByName(ExplodeWarTask.EXPLODE_TASK_NAME);
+            task = (ExplodeWarTask) project.getTasks().getByName(EXPLODE_TASK_NAME);
             task.dependsOn(war);
             task.setWarFile(war.getArchiveFile().get().getAsFile().toPath());
             task.setExplodedWarDirectory(
@@ -130,7 +133,7 @@ public class PayaraMicroPlugin implements Plugin<Project> {
 
     private <T extends Task> T createTask(String name, String description, Class<T> action) {
         T task = project.getTasks().create(name, action);
-        task.setGroup(WarPlugin.WEB_APP_GROUP);
+        task.setGroup(PAYARA_MICRO_GROUP);
         task.setDescription(description);
         if (task instanceof AbstractTask) {
             ((AbstractTask) task).setProject(project);

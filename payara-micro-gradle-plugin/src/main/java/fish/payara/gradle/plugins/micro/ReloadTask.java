@@ -60,7 +60,7 @@ public class ReloadTask extends AbstractTask {
     }
 
     @TaskAction
-    public void onStop() {
+    public void onReload() {
 
         if (skip) {
             getLog().info("Reload task execution is skipped");

@@ -135,7 +135,7 @@ public abstract class AbstractTask extends ConventionTask {
                 + FilenameUtils.getBaseName(getWarArchive().map(File::getName).get());
     }
 
-    @OutputFile
+    @Internal
     protected File getUberJar() {
         return new File(getUberJarPath());
     }

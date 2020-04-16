@@ -148,9 +148,8 @@ public class StartTask extends AbstractTask {
                         actualArgs.add(indice++, "-" + key);
                     }
                 }
-                actualArgs.add(indice++, "-Dorg.gradle.debug=true");
-
             }
+
             actualArgs.add(indice++, "-Dgav=" + getProjectGAV());
             actualArgs.add(indice++, "-jar");
             actualArgs.add(indice++, path);
@@ -166,9 +165,11 @@ public class StartTask extends AbstractTask {
                 for (Entry<String, Object> entry : commandLineOptions.entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
-                    if (isNotEmpty(key) && nonNull(value) && isNotEmpty(value.toString())) {
+                    if (isNotEmpty(key)) {
                         actualArgs.add(indice++, "--" + key);
-                        actualArgs.add(indice++, String.valueOf(value));
+                        if (value != null && isNotEmpty(value.toString())) {
+                            actualArgs.add(indice++, String.valueOf(value));
+                        }
                     }
                 }
             }

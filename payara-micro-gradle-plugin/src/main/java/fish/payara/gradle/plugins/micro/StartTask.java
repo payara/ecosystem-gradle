@@ -167,9 +167,9 @@ public class StartTask extends AbstractTask {
                     String key = entry.getKey();
                     Object value = entry.getValue();
                     if (isNotEmpty(key)) {
-                        actualArgs.add(indice++, "--" + key);
+                        actualArgs.add(indice++, escapeJava("--" + key));
                         if (value != null && isNotEmpty(value.toString())) {
-                            actualArgs.add(indice++, String.valueOf(value));
+                            actualArgs.add(indice++, escapeJava(String.valueOf(value)));
                         }
                     }
                 }

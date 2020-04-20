@@ -74,6 +74,8 @@ public class PayaraMicroExtension {
 
     private String payaraVersion = DEFAULT_MICRO_VERSION;
 
+    private Map<String, Object> environment;
+
     private Map<String, Object> commandLineOptions;
 
     private Map<String, Object> javaCommandLineOptions;
@@ -174,6 +176,14 @@ public class PayaraMicroExtension {
 
     public void setPayaraVersion(String payaraVersion) {
         this.payaraVersion = payaraVersion;
+    }
+
+    public Map<String, Object> getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Map<String, Object> environment) {
+        this.environment = environment;
     }
 
     public Map<String, Object> getCommandLineOptions() {

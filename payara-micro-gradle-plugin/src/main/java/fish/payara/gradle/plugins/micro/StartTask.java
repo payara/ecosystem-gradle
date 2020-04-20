@@ -87,6 +87,8 @@ public class StartTask extends AbstractTask {
 
     private String payaraVersion;
 
+    private Map<String, Object> environment;
+
     private Map<String, Object> javaCommandLineOptions;
 
     private Map<String, Object> commandLineOptions;
@@ -105,6 +107,7 @@ public class StartTask extends AbstractTask {
         this.debug = extension.getDebug();
         this.payaraMicroAbsolutePath = extension.getPayaraMicroAbsolutePath();
         this.payaraVersion = extension.getPayaraVersion();
+        this.environment = extension.getEnvironment();
         this.javaCommandLineOptions = extension.getJavaCommandLineOptions();
         this.commandLineOptions = extension.getCommandLineOptions();
     }
@@ -173,9 +176,29 @@ public class StartTask extends AbstractTask {
                 }
             }
             System.out.println("args " + actualArgs);
+            List<String> environmentVariables = new ArrayList<>();
+            if (environment != null && !environment.isEmpty()) {
+                environment.putAll(System.getenv());
+                for (Entry<String, Object> entry : environment.entrySet()) {
+                    String key = entry.getKey();
+                    Object value = entry.getValue();
+                    if (isNotEmpty(key) && value != null && isNotEmpty(value.toString())) {
+                        environmentVariables.add(key + "=" + String.valueOf(value));
+                    }
+                }
+            }
             try {
                 final Runtime re = Runtime.getRuntime();
-                microProcess = re.exec(actualArgs.toArray(new String[actualArgs.size()]));
+                if (environmentVariables.isEmpty()) {
+                    microProcess = re.exec(
+                            actualArgs.toArray(new String[actualArgs.size()])
+                    );
+                } else {
+                    microProcess = re.exec(
+                            actualArgs.toArray(new String[actualArgs.size()]),
+                            environmentVariables.toArray(new String[environmentVariables.size()])
+                    );
+                }
 
                 if (daemon) {
                     redirectStream(microProcess.getInputStream(), System.out);

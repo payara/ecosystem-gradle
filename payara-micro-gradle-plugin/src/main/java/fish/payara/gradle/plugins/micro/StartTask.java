@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import static java.util.Objects.nonNull;
 import java.util.concurrent.TimeUnit;
+import static org.apache.commons.text.StringEscapeUtils.escapeJava;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
@@ -139,18 +140,17 @@ public class StartTask extends AbstractTask {
                     if (isNotEmpty(key) && nonNull(value) && isNotEmpty(value.toString())) {
                         if (key.startsWith("D")) {
                             String systemProperty = String.format("-%s=%s", key, value);
-                            actualArgs.add(indice++, systemProperty);
+                            actualArgs.add(indice++, escapeJava(systemProperty));
                         } else {
                             String option = String.format("-%s:%s", key, value);
-                            actualArgs.add(indice++, option);
+                            actualArgs.add(indice++, escapeJava(option));
                         }
                     } else if (isNotEmpty(key)) {
-                        actualArgs.add(indice++, "-" + key);
+                        actualArgs.add(indice++, escapeJava("-" + key));
                     }
                 }
-                actualArgs.add(indice++, "-Dorg.gradle.debug=true");
-
             }
+
             actualArgs.add(indice++, "-Dgav=" + getProjectGAV());
             actualArgs.add(indice++, "-jar");
             actualArgs.add(indice++, path);
@@ -166,9 +166,11 @@ public class StartTask extends AbstractTask {
                 for (Entry<String, Object> entry : commandLineOptions.entrySet()) {
                     String key = entry.getKey();
                     Object value = entry.getValue();
-                    if (isNotEmpty(key) && nonNull(value) && isNotEmpty(value.toString())) {
-                        actualArgs.add(indice++, "--" + key);
-                        actualArgs.add(indice++, String.valueOf(value));
+                    if (isNotEmpty(key)) {
+                        actualArgs.add(indice++, escapeJava("--" + key));
+                        if (value != null && isNotEmpty(value.toString())) {
+                            actualArgs.add(indice++, escapeJava(String.valueOf(value)));
+                        }
                     }
                 }
             }

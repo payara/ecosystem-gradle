@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.apache.commons.lang3.StringUtils;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class StopTask extends AbstractTask {
     private String processId;
 
     private boolean useUberJar;
-
+    
     @Override
     public void configure(PayaraMicroExtension extension) {
         this.skip = extension.isSkip();
@@ -159,12 +160,9 @@ public class StopTask extends AbstractTask {
         return LOG;
     }
 
-    public String getProcessId() {
+    @Internal
+    String getProcessId() {
         return processId;
-    }
-
-    public boolean isUseUberJar() {
-        return useUberJar;
     }
 
 }

@@ -38,7 +38,6 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-import org.gradle.api.Project;
 import org.junit.jupiter.api.Test;
 
 public class BundleLifecycleTest extends BaseTest {
@@ -46,9 +45,8 @@ public class BundleLifecycleTest extends BaseTest {
     @Test
     public void uberJarBundleTest() throws Exception {
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-
-        bundleMicro(project, extension);
+        buildProject();
+        buildExtension();
+        bundleMicro();
     }
 }

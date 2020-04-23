@@ -39,18 +39,27 @@
 package fish.payara.gradle.plugins.micro;
 
 import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_NAME;
+import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_NAME;
 import org.awaitility.Awaitility;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.internal.TaskInternal;
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler;
+import org.gradle.api.internal.project.ProjectInternal;
+import org.gradle.api.internal.tasks.TaskExecuter;
+import org.gradle.api.internal.tasks.TaskStateInternal;
+import org.gradle.api.internal.tasks.execution.DefaultTaskExecutionContext;
+import org.gradle.api.plugins.WarPlugin;
 import static org.gradle.api.plugins.WarPlugin.WAR_TASK_NAME;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.execution.ProjectExecutionServices;
 import org.gradle.testfixtures.ProjectBuilder;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  *
@@ -62,46 +71,80 @@ public abstract class BaseTest {
     private static final String MOCK_PROJECT_NAME = "example";
     private static final String MOCK_PROJECT_VERSION = "1.0.SNAPSHOT";
 
+    private Project project;
+
+    private ProjectExecutionServices executionServices;
+
+    private PayaraMicroPlugin microPlugin;
+    
+    private PayaraMicroExtension extension;
+
     protected Project buildProject() {
-        Project project = ProjectBuilder.builder()
+        project = ProjectBuilder.builder()
                 .withName(MOCK_PROJECT_NAME)
                 .build();
         project.setGroup(MOCK_PROJECT_GROUP_ID);
         project.setVersion(MOCK_PROJECT_VERSION);
+        executionServices = new ProjectExecutionServices((ProjectInternal) project);
 
         DefaultRepositoryHandler repositoryHandler = (DefaultRepositoryHandler) project.getRepositories();
         repositoryHandler.add(repositoryHandler.mavenLocal());
         repositoryHandler.add(repositoryHandler.mavenCentral());
+
+        assertFalse(project.getPlugins().hasPlugin("java"));
+        project.getPluginManager().apply("java");
+        assertTrue(project.getPlugins().hasPlugin("java"));
+
+        assertFalse(project.getPlugins().hasPlugin(WarPlugin.class));
+        project.getPluginManager().apply(WarPlugin.class);
+        assertTrue(project.getPlugins().hasPlugin(WarPlugin.class));
+
+        assertFalse(project.getPlugins().hasPlugin(PayaraMicroPlugin.class));
+        project.getPluginManager().apply(PayaraMicroPlugin.class);
+        assertTrue(project.getPlugins().hasPlugin(PayaraMicroPlugin.class));
+
         return project;
     }
 
-    protected PayaraMicroExtension buildExtension(Project project) {
-        PayaraMicroPlugin microPlugin = new PayaraMicroPlugin();
-        microPlugin.apply(project);
-        PayaraMicroExtension extension = microPlugin.createExtension();
+    protected PayaraMicroExtension buildExtension() {
+        microPlugin = project.getPlugins().getPlugin(PayaraMicroPlugin.class);
+        extension = microPlugin.createExtension();
         extension.setDaemon(true);
         extension.setImmediateExit(false);
         return extension;
     }
 
-    protected void bundleMicro(Project project, PayaraMicroExtension extension) {
+    protected void createWar() {
+        War war = ((War) project.getTasks().getByName(WAR_TASK_NAME));
+        execute(war);
+        assertTrue(war.getArchiveFile().get().getAsFile().exists());
+    }
+
+    protected void createExplodedWar() {
+        createWar();
+
+        Task task = project.getTasks().getByName(EXPLODE_TASK_NAME);
+        assertTrue(task instanceof ExplodeWarTask);
+        ExplodeWarTask explodeWar = (ExplodeWarTask) task;
+        microPlugin.configureExplodeWarTask();
+        execute(explodeWar);
+        assertTrue(explodeWar.getExplodedWarDirectory().exists());
+    }
+    
+    protected void bundleMicro() {
+        createWar();
+
         Task task = project.getTasks().getByName(BUNDLE_TASK_NAME);
         assertTrue(task instanceof BundleTask);
         BundleTask bundleTask = (BundleTask) task;
-
         bundleTask.configure(extension);
-
-        War war = ((War) project.getTasks().getByName(WAR_TASK_NAME));
-        war.execute();
-        assertTrue(war.getArchivePath().exists());
-
-        bundleTask.execute();
+        execute(bundleTask);
         assertNotNull(bundleTask.getPayaraMicroPath(extension.getPayaraVersion()));
-        assertTrue(bundleTask.getWar().getArchivePath().exists());
+        assertTrue(bundleTask.getWarTask().getArchiveFile().get().getAsFile().exists());
         assertTrue(bundleTask.getUberJar().exists());
     }
 
-    protected void bootstrapMicro(Project project, PayaraMicroExtension extension) {
+    protected void bootstrapMicro() {
         Task task = project.getTasks().getByName(START_TASK_NAME);
         assertTrue(task instanceof StartTask);
         StartTask startTask = (StartTask) task;
@@ -118,12 +161,18 @@ public abstract class BaseTest {
         assertNull(stopTask.getProcessId());
         assertNull(stopTask.findProcessId());
 
-        startTask.execute();
+        execute(startTask);
         assertNotNull(stopTask.findProcessId());
 
-        stopTask.execute();
+        execute(stopTask);
         Awaitility.await()
                 .until(() -> stopTask.findProcessId() == null);
+    }
+
+    private void execute(Task task) {
+        executionServices.get(TaskExecuter.class)
+                .execute((TaskInternal) task, (TaskStateInternal) task.getState(), new DefaultTaskExecutionContext(null));
+        task.getState().rethrowFailure();
     }
 
 }

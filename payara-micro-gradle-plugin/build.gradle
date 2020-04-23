@@ -1,10 +1,9 @@
 plugins {
     id 'com.gradle.plugin-publish' version '0.11.0'
     id 'maven-publish'
+    id 'java'
+    id 'java-gradle-plugin'
 }
-
-apply plugin: 'java'
-apply plugin: "com.gradle.plugin-publish"
 
 group = 'fish.payara.gradle.plugins'
 version = '1.0.4-SNAPSHOT'
@@ -18,10 +17,11 @@ repositories {
 }
 
 dependencies {
-    compile gradleApi()
-    compile localGroovy()
-    compile 'commons-io:commons-io:2.6'
-    compile 'org.apache.commons:commons-lang3:3.10'
+    api gradleApi()
+    api localGroovy()
+    implementation 'commons-io:commons-io:2.6'
+    implementation 'org.apache.commons:commons-lang3:3.10'
+    testImplementation gradleTestKit()
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testImplementation 'org.awaitility:awaitility:4.0.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'

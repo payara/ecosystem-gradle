@@ -38,7 +38,6 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-import org.gradle.api.Project;
 import org.junit.jupiter.api.Test;
 
 public class StartStopLifecycleTest extends BaseTest {
@@ -46,40 +45,42 @@ public class StartStopLifecycleTest extends BaseTest {
     @Test
     public void warTest() throws Exception {
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
+        buildProject();
+        buildExtension().setDeployWar(true);
 
-        bootstrapMicro(project, extension);
+        createWar();
+        bootstrapMicro();
     }
 
     @Test
     public void customMicroVersionTest() throws Exception {
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setPayaraVersion("5.181");
+        buildProject();
+        buildExtension().setPayaraVersion("5.194");
 
-        bootstrapMicro(project, extension);
+        createWar();
+        bootstrapMicro();
     }
 
     @Test
     public void uberJarTest() throws Exception {
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
-        extension.setUseUberJar(true);
+        buildProject();
+        buildExtension().setUseUberJar(true);
 
-        bundleMicro(project, extension);
-        bootstrapMicro(project, extension);
+        bundleMicro();
+        bootstrapMicro();
     }
 
     @Test
     public void explodedWarTest() throws Exception {
 
-        Project project = buildProject();
-        PayaraMicroExtension extension = buildExtension(project);
+        buildProject();
+        PayaraMicroExtension extension = buildExtension();
+        extension.setDeployWar(true);
         extension.setExploded(true);
 
-        bootstrapMicro(project, extension);
+        createExplodedWar();
+        bootstrapMicro();
     }
 }

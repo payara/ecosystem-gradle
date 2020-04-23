@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.apache.commons.io.FilenameUtils;
 import org.gradle.api.Project;
@@ -55,6 +56,9 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.plugins.WarPlugin;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.bundling.War;
 import org.slf4j.Logger;
 
@@ -78,10 +82,12 @@ public abstract class AbstractTask extends ConventionTask {
         this.project = project;
     }
 
+    @Input
     protected String getProjectGAV() {
         return (String) project.getGroup() + ":" + project.getName() + ":" + (String) project.getVersion();
     }
 
+    @Input
     public boolean isSkip() {
         return skip;
     }
@@ -99,27 +105,47 @@ public abstract class AbstractTask extends ConventionTask {
                 .map(File::getAbsolutePath);
     }
 
-    protected War getWar() {
+    @Internal
+    protected War getWarTask() {
         return (War) project.getTasks().getByName(WarPlugin.WAR_TASK_NAME);
     }
+    
+    @Internal
+    protected Optional<File> getWarArchive() {
+        if (getWarTask().getArchiveFile().isPresent()) {
+            return Optional.of(getWarTask().getArchiveFile().get().getAsFile());
+        } else {
+            return Optional.empty();
+        }
+    }
 
+    @Internal
     protected String getWarPath() {
-        return getWar().getArchivePath().getAbsolutePath();
+        return getWarArchive()
+                .map(File::getAbsolutePath)
+                .orElseThrow(() -> new IllegalStateException("WarArchive not found"));
     }
 
+    @Internal
     protected String getExplodedWarPath() {
-        return getWar().getArchivePath().getParent() 
+        return getWarArchive()
+                .map(File::getParent)
+                .orElseThrow(() -> new IllegalStateException("WarArchive not found"))
                 + File.separator 
-                + FilenameUtils.getBaseName(getWar().getArchiveName());
+                + FilenameUtils.getBaseName(getWarArchive().map(File::getName).get());
     }
 
+    @Internal
     protected File getUberJar() {
         return new File(getUberJarPath());
     }
 
+    @Internal
     protected String getUberJarPath() {
-        return getWar()
-                .getArchivePath()
+        return getWarTask()
+                .getArchiveFile()
+                .get()
+                .getAsFile()
                 .getAbsolutePath()
                 .replace("." + WAR_EXTENSION, "-" + MICROBUNDLE_EXTENSION + "." + JAR_EXTENSION);
     }
@@ -148,6 +174,7 @@ public abstract class AbstractTask extends ConventionTask {
         }
     }
 
+    @Internal
     public abstract Logger getLog();
-
+    
 }

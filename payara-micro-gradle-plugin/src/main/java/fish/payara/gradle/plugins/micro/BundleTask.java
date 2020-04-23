@@ -113,12 +113,4 @@ public class BundleTask extends AbstractTask {
         return LOG;
     }
 
-    public String getPayaraVersion() {
-        return payaraVersion;
-    }
-
-    public String getJavaPath() {
-        return javaPath;
-    }
-
 }

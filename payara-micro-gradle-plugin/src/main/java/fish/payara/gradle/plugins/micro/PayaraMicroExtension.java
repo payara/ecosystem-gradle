@@ -73,6 +73,8 @@ public class PayaraMicroExtension {
     private String payaraMicroAbsolutePath;
 
     private String payaraVersion = DEFAULT_MICRO_VERSION;
+    
+    private String contextRoot;
 
     private Map<String, Object> environment;
 
@@ -176,6 +178,14 @@ public class PayaraMicroExtension {
 
     public void setPayaraVersion(String payaraVersion) {
         this.payaraVersion = payaraVersion;
+    }
+
+    public String getContextRoot() {
+        return getValue("contextRoot", contextRoot);
+    }
+
+    public void setContextRoot(String contextRoot) {
+        this.contextRoot = contextRoot;
     }
 
     public Map<String, Object> getEnvironment() {

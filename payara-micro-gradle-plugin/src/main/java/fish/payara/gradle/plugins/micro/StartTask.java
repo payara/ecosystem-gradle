@@ -88,6 +88,8 @@ public class StartTask extends AbstractTask {
 
     private String payaraVersion;
 
+    private String contextRoot;
+
     private Map<String, Object> environment;
 
     private Map<String, Object> javaCommandLineOptions;
@@ -108,6 +110,7 @@ public class StartTask extends AbstractTask {
         this.debug = extension.getDebug();
         this.payaraMicroAbsolutePath = extension.getPayaraMicroAbsolutePath();
         this.payaraVersion = extension.getPayaraVersion();
+        this.contextRoot = extension.getContextRoot();
         this.environment = extension.getEnvironment();
         this.javaCommandLineOptions = extension.getJavaCommandLineOptions();
         this.commandLineOptions = extension.getCommandLineOptions();
@@ -164,6 +167,10 @@ public class StartTask extends AbstractTask {
                 } else {
                     actualArgs.add(indice++, getWarPath());
                 }
+            }
+            if (contextRoot != null) {
+                actualArgs.add(indice++, "--contextroot");
+                actualArgs.add(indice++, contextRoot);
             }
             if (commandLineOptions != null) {
                 for (Entry<String, Object> entry : commandLineOptions.entrySet()) {

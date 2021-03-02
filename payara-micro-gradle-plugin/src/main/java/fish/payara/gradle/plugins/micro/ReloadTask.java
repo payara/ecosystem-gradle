@@ -39,7 +39,9 @@
 package fish.payara.gradle.plugins.micro;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Properties;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +55,19 @@ public class ReloadTask extends AbstractTask {
     private static final Logger LOG = LoggerFactory.getLogger(ReloadTask.class);
 
     private static final String RELOAD_FILE = ".reload";
+    
+    private boolean hotDeploy;
+
+    private String sourcesChanged;
+
+    private boolean metadataChanged;
 
     @Override
     public void configure(PayaraMicroExtension extension) {
         this.skip = extension.isSkip();
+        this.hotDeploy = extension.isHotDeploy();
+        this.sourcesChanged = extension.getSourcesChanged();
+        this.metadataChanged = extension.isMetadataChanged();
     }
 
     @TaskAction
@@ -72,7 +83,21 @@ public class ReloadTask extends AbstractTask {
             throw new IllegalStateException(String.format("explodedDir[%s] not found", explodedDir.toString()));
         }
         File reloadFile = new File(explodedDir, RELOAD_FILE);
-        if (reloadFile.exists()) {
+        if (hotDeploy) {
+            Properties props = new Properties();
+            props.setProperty("hotdeploy", "true");
+            if (metadataChanged) {
+                props.setProperty("metadatachanged", "true");
+            }
+            if (sourcesChanged != null && !sourcesChanged.isEmpty()) {
+                props.setProperty("sourceschanged", sourcesChanged);
+            }
+            try (FileOutputStream outputStrem = new FileOutputStream(reloadFile)) {
+                props.store(outputStrem, null);
+            } catch (Exception ex) {
+                throw new IllegalStateException("Unable to save .reload file " + ex.toString());
+            }
+        } else if (reloadFile.exists()) {
             reloadFile.setLastModified(System.currentTimeMillis());
         } else {
             try {

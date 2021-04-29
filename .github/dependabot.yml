@@ -1,0 +1,24 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/payara-micro-gradle-plugin"
+  schedule:
+    interval: weekly
+    time: "03:00"
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  ignore:
+  - dependency-name: com.gradle.plugin-publish
+    versions:
+    - 0.12.0
+    - 0.13.0
+  - dependency-name: org.junit.jupiter:junit-jupiter-engine
+    versions:
+    - 5.7.0
+  - dependency-name: org.junit.jupiter:junit-jupiter-api
+    versions:
+    - 5.7.0
+  - dependency-name: org.apache.commons:commons-lang3
+    versions:
+    - "3.11"

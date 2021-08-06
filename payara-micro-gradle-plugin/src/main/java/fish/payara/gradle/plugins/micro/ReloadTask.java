@@ -39,8 +39,10 @@
 package fish.payara.gradle.plugins.micro;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Properties;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
@@ -98,6 +100,10 @@ public class ReloadTask extends AbstractTask {
                 throw new IllegalStateException("Unable to save .reload file " + ex.toString());
             }
         } else if (reloadFile.exists()) {
+            try ( PrintWriter pw = new PrintWriter(reloadFile)) {
+            } catch (FileNotFoundException ex) {
+                throw new IllegalStateException("Unable to find .reload file " + ex.toString());
+            }
             reloadFile.setLastModified(System.currentTimeMillis());
         } else {
             try {

@@ -2,3 +2,7 @@
 /payara-micro-gradle-plugin/build/
 /payara-micro-gradle-plugin/.gradle/
 /.gradle
+/payara-micro-gradle-plugin/src/test/resources/sample/.nb-gradle/
+/payara-micro-gradle-plugin/src/test/resources/sample/build/
+/payara-micro-gradle-plugin/src/test/resources/sample/.gradle/
+/payara-micro-gradle-plugin/src/test/resources/sample/userHome/

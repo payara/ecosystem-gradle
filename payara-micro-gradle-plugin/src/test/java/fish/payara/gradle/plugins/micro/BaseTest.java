@@ -42,6 +42,9 @@ import static fish.payara.gradle.plugins.micro.BundleTask.BUNDLE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_NAME;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.awaitility.Awaitility;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -82,6 +85,7 @@ public abstract class BaseTest {
     protected Project buildProject() {
         project = ProjectBuilder.builder()
                 .withName(MOCK_PROJECT_NAME)
+                .withProjectDir(new File("src/test/resources/sample").getAbsoluteFile())
                 .build();
         project.setGroup(MOCK_PROJECT_GROUP_ID);
         project.setVersion(MOCK_PROJECT_VERSION);

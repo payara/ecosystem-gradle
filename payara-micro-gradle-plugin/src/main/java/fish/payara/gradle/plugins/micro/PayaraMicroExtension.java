@@ -75,6 +75,12 @@ public class PayaraMicroExtension {
     private String payaraVersion = DEFAULT_MICRO_VERSION;
     
     private String contextRoot;
+    
+    private boolean hotDeploy;
+
+    private String sourcesChanged;
+
+    private boolean metadataChanged;
 
     private Map<String, Object> environment;
 
@@ -186,6 +192,30 @@ public class PayaraMicroExtension {
 
     public void setContextRoot(String contextRoot) {
         this.contextRoot = contextRoot;
+    }
+        
+    public boolean isHotDeploy() {
+        return Boolean.valueOf(getValue("hotDeploy", hotDeploy));
+    }
+
+    public void setHotDeploy(boolean hotDeploy) {
+        this.hotDeploy = hotDeploy;
+    }
+
+    public String getSourcesChanged() {
+        return getValue("sourcesChanged", sourcesChanged);
+    }
+
+    public void setSourcesChanged(String sourcesChanged) {
+        this.sourcesChanged = sourcesChanged;
+    }
+
+    public boolean isMetadataChanged() {
+        return Boolean.valueOf(getValue("metadataChanged", metadataChanged));
+    }
+
+    public void setMetadataChanged(boolean metadataChanged) {
+        this.metadataChanged = metadataChanged;
     }
 
     public Map<String, Object> getEnvironment() {

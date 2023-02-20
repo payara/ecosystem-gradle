@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) [2018-2021] Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2018-2023] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,21 +43,25 @@ import static fish.payara.gradle.plugins.micro.ExplodeWarTask.EXPLODE_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StartTask.START_TASK_NAME;
 import static fish.payara.gradle.plugins.micro.StopTask.STOP_TASK_NAME;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.awaitility.Awaitility;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.internal.DocumentationRegistry;
 import org.gradle.api.internal.TaskInternal;
 import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler;
+import org.gradle.api.internal.file.FileCollectionFactory;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.internal.tasks.TaskExecuter;
 import org.gradle.api.internal.tasks.TaskStateInternal;
 import org.gradle.api.internal.tasks.execution.DefaultTaskExecutionContext;
+import org.gradle.api.internal.tasks.properties.DefaultTaskProperties;
 import org.gradle.api.plugins.WarPlugin;
 import static org.gradle.api.plugins.WarPlugin.WAR_TASK_NAME;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.execution.ProjectExecutionServices;
+import org.gradle.internal.execution.BuildOutputCleanupRegistry;
+import org.gradle.internal.execution.WorkValidationContext;
+import org.gradle.internal.execution.impl.DefaultWorkValidationContext;
 import org.gradle.testfixtures.ProjectBuilder;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -79,7 +83,7 @@ public abstract class BaseTest {
     private ProjectExecutionServices executionServices;
 
     private PayaraMicroPlugin microPlugin;
-    
+
     private PayaraMicroExtension extension;
 
     protected Project buildProject() {
@@ -134,7 +138,7 @@ public abstract class BaseTest {
         execute(explodeWar);
         assertTrue(explodeWar.getExplodedWarDirectory().exists());
     }
-    
+
     protected void bundleMicro() {
         createWar();
 
@@ -174,8 +178,26 @@ public abstract class BaseTest {
     }
 
     private void execute(Task task) {
+
+        final ProjectInternal projectInternal = (ProjectInternal) project;
+        BuildOutputCleanupRegistry cleanupRegistry = projectInternal.getServices().get(BuildOutputCleanupRegistry.class);
+        cleanupRegistry.resolveOutputs();
+        DocumentationRegistry documentationRegistry = new DocumentationRegistry();
+        DefaultTaskExecutionContext taskExecutionContext = new DefaultTaskExecutionContext(
+                null,
+                DefaultTaskProperties.resolve(
+                        executionServices.get(org.gradle.internal.properties.bean.PropertyWalker.class), 
+                        executionServices.get(FileCollectionFactory.class), (TaskInternal) task
+                ),
+                new DefaultWorkValidationContext(documentationRegistry, WorkValidationContext.TypeOriginInspector.NO_OP),
+                (context) -> {
+                }
+        );
         executionServices.get(TaskExecuter.class)
-                .execute((TaskInternal) task, (TaskStateInternal) task.getState(), new DefaultTaskExecutionContext(null));
+                .execute(
+                        (TaskInternal) task, (TaskStateInternal) task.getState(),
+                        taskExecutionContext
+                );
         task.getState().rethrowFailure();
     }
 

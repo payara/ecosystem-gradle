@@ -37,7 +37,7 @@ spotbugs {
     ignoreFailures = false    // Set to true if you want the build to continue even if there are violations
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
     reports {
         xml.enabled = true   // Enable XML report generation
         html.enabled = true  // Enable HTML report generation

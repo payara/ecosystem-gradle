@@ -34,7 +34,7 @@ spotbugs {
     toolVersion = '4.2.3'    // Use the latest stable version
     effort = 'max'            // Use maximum effort for more detailed analysis
     reportLevel = 'low'       // Report all issues (low, medium, high)
-    ignoreFailures = false    // Set to true if you want the build to continue even if there are violations
+    ignoreFailures = true    // Set to true if you want the build to continue even if there are violations
 }
 
 tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {

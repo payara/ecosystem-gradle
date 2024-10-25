@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'java'
     id 'java-gradle-plugin'
+    id 'com.github.spotbugs' version '5.0.14' // Add SpotBugs plugin
 }
 
 group = 'fish.payara.gradle.plugins'
@@ -28,6 +29,21 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
     testImplementation 'org.awaitility:awaitility:4.2.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+}
+
+// SpotBugs Configuration
+spotbugs {
+    toolVersion = '4.2.3'    // Use the latest stable version
+    effort = 'max'            // Use maximum effort for more detailed analysis
+    reportLevel = 'low'       // Report all issues (low, medium, high)
+    ignoreFailures = true    // Set to true if you want the build to continue even if there are violations
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
+    reports {
+        xml.enabled = true   // Enable XML report generation
+        html.enabled = false  // Enable HTML report generation
+    }
 }
 
 test {

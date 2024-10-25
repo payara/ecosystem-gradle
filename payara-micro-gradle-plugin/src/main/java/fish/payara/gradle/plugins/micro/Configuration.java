@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) [2018-2021] Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) [2018-2024] Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ public interface Configuration {
     String MICRO_THREAD_NAME = "PayaraMicroThread";
     String MICRO_READY_MESSAGE = "ready in";
 
-    String DEFAULT_MICRO_VERSION = "6.2023.1";
+    String DEFAULT_MICRO_VERSION = "6.2024.10";
 
     String JAR_EXTENSION = "jar";
     String WAR_EXTENSION = "war";

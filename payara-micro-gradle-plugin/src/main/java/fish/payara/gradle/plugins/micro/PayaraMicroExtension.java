@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018-2020 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018-2024 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ package fish.payara.gradle.plugins.micro;
 import static fish.payara.gradle.plugins.micro.Configuration.DEFAULT_MICRO_VERSION;
 import static fish.payara.gradle.plugins.micro.PayaraMicroPlugin.PLUGIN_ID;
 import java.util.Map;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 public class PayaraMicroExtension {
@@ -179,7 +180,17 @@ public class PayaraMicroExtension {
     }
 
     public String getPayaraVersion() {
-        return getValue("payaraVersion", payaraVersion);
+        PayaraMicroVersionSelector selector = new PayaraMicroVersionSelector(project);
+        String version = null;
+        try {
+            version = selector.fetchPayaraVersion();
+        } catch (GradleException ex) {
+            project.getLogger().error("Unable to fetch the version from Maven Central " + ex.toString());
+        }
+        if (version == null) {
+            version = DEFAULT_MICRO_VERSION;
+        }
+        return getValue("payaraVersion", version);
     }
 
     public void setPayaraVersion(String payaraVersion) {

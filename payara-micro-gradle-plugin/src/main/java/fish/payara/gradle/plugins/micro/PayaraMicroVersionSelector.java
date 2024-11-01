@@ -128,7 +128,7 @@ public class PayaraMicroVersionSelector {
         }
     }
 
-    private String getPayaraMicroVersion(int jakartaMajorVersion) throws GradleException {
+    public static String getPayaraMicroVersion(int jakartaMajorVersion) throws GradleException {
         return fetchPayaraMicroVersion(version -> version.startsWith(JAKARTA_TO_PAYARA_MAP.get(jakartaMajorVersion)));
     }
 
@@ -136,7 +136,7 @@ public class PayaraMicroVersionSelector {
         return fetchPayaraMicroVersion(version -> true);
     }
 
-    private String fetchPayaraMicroVersion(Predicate<String> versionPredicate) throws GradleException {
+    private static String fetchPayaraMicroVersion(Predicate<String> versionPredicate) throws GradleException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet httpGet = new HttpGet(MAVEN_METADATA_URL);
             try (CloseableHttpResponse response = httpClient.execute(httpGet)) {

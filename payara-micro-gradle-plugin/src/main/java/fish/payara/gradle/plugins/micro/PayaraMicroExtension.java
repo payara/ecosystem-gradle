@@ -73,7 +73,7 @@ public class PayaraMicroExtension {
 
     private String payaraMicroAbsolutePath;
 
-    private String payaraVersion = DEFAULT_MICRO_VERSION;
+    private String payaraVersion;
     
     private String contextRoot;
     
@@ -180,6 +180,9 @@ public class PayaraMicroExtension {
     }
 
     public String getPayaraVersion() {
+        if(payaraVersion != null) {
+            return payaraVersion;
+        }
         PayaraMicroVersionSelector selector = new PayaraMicroVersionSelector(project);
         String version = null;
         try {

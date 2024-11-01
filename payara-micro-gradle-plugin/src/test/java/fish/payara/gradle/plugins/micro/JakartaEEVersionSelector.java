@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Payara Foundation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024 Payara Foundation and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,18 +38,33 @@
  */
 package fish.payara.gradle.plugins.micro;
 
-import org.junit.jupiter.api.Test;
+public class JakartaEEVersionSelector {
 
-public class BundleLifecycleTest extends BaseTest {
+    public static int getMajorJakartaEEVersion() {
+        int jdkVersion = getCurrentJDKVersion();
+        switch (jdkVersion) {
+            case 21:
+                return 11; // Select 11 for JDK 21
+            case 17:
+                return 10; // Select 10 for JDK 17
+            case 11:
+                return 8;  // Select 8 for JDK 11
+            default:
+                return 8;
+        }
+    }
 
-    @Test
-    public void uberJarBundleTest() throws Exception {
+    private static int getCurrentJDKVersion() {
+        String version = System.getProperty("java.version");
+        String[] versionParts = version.split("\\.");
+        int majorVersion;
 
-        buildProject();
-        PayaraMicroExtension extension = buildExtension();
-        int jakataEEVersion = JakartaEEVersionSelector.getMajorJakartaEEVersion();
-        String payaraVersion = PayaraMicroVersionSelector.getPayaraMicroVersion(jakataEEVersion);
-        extension.setPayaraVersion(payaraVersion);
-        bundleMicro();
+        if (versionParts[0].equals("1")) {
+            majorVersion = Integer.parseInt(versionParts[1]); // For versions like 1.8
+        } else {
+            majorVersion = Integer.parseInt(versionParts[0]); // For versions like 9, 10, 11
+        }
+
+        return majorVersion;
     }
 }

@@ -22,7 +22,7 @@ pipeline {
                     sh '''
                     ls -lrt
                     cd payara-micro-gradle-plugin
-                    gradle clean build -x check         
+                    gradle clean build      
                     '''
                     echo '*#*#*#*#*#*#*#*#*#*#*#*#    Built SRC   *#*#*#*#*#*#*#*#*#*#*#*#*#*#*#'
                 }

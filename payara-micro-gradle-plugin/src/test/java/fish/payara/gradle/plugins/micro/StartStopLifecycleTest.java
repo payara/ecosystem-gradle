@@ -46,7 +46,12 @@ public class StartStopLifecycleTest extends BaseTest {
     public void warTest() throws Exception {
 
         buildProject();
-        buildExtension().setDeployWar(true);
+        
+        PayaraMicroExtension extension = buildExtension();
+        int jakataEEVersion = JakartaEEVersionSelector.getMajorJakartaEEVersion();
+        String payaraVersion = PayaraMicroVersionSelector.getPayaraMicroVersion(jakataEEVersion);
+        extension.setPayaraVersion(payaraVersion);
+        extension.setDeployWar(true);
 
         createWar();
         bootstrapMicro();
@@ -66,7 +71,11 @@ public class StartStopLifecycleTest extends BaseTest {
     public void uberJarTest() throws Exception {
 
         buildProject();
-        buildExtension().setUseUberJar(true);
+        PayaraMicroExtension extension = buildExtension();
+        int jakataEEVersion = JakartaEEVersionSelector.getMajorJakartaEEVersion();
+        String payaraVersion = PayaraMicroVersionSelector.getPayaraMicroVersion(jakataEEVersion);
+        extension.setPayaraVersion(payaraVersion);
+        extension.setUseUberJar(true);
 
         bundleMicro();
         bootstrapMicro();
@@ -74,9 +83,11 @@ public class StartStopLifecycleTest extends BaseTest {
 
     @Test
     public void explodedWarTest() throws Exception {
-
         buildProject();
         PayaraMicroExtension extension = buildExtension();
+        int jakataEEVersion = JakartaEEVersionSelector.getMajorJakartaEEVersion();
+        String payaraVersion = PayaraMicroVersionSelector.getPayaraMicroVersion(jakataEEVersion);
+        extension.setPayaraVersion(payaraVersion);
         extension.setDeployWar(true);
         extension.setExploded(true);
 

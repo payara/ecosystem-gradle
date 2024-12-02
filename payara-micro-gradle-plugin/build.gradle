@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'fish.payara.gradle.plugins'
-version = '2.0.2-SNAPSHOT'
+version = '2.1.0'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -80,7 +80,7 @@ publishing {
         maven(MavenPublication) {
             groupId = "fish.payara.gradle.plugins"
             artifactId = "payara-micro-gradle-plugin"
-            version = "2.0.1"
+            version = "2.1.0"
 
             from components.java
         }

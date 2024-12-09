@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id 'java'
     id 'java-gradle-plugin'
-    id 'com.github.spotbugs' version '5.0.14' // Add SpotBugs plugin
+    id 'com.github.spotbugs' version '6.0.26' // Add SpotBugs plugin
 }
 
 group = 'fish.payara.gradle.plugins'
